@@ -1,0 +1,176 @@
+<h1 id="python-dunder-methods-part-1">Python Dunder Methods: Part 1</h1>
+<h2 id="introduction">Introduction</h2>
+<p>In this article, we will look at how to use Python magic methods. In Python, a class have special methods that are invoked by special syntax. These methods are called <strong>dunder methods</strong> or <strong>magic methods</strong>. Dunder here means Double Under (Underscores). This set of predefined methods help you enrich your classes. Every Python class inherits these methods, and you can override them to modify their behaviour. They are easy to recognize because they start and end with double underscores, for example, <code>__init__</code>,  <code>__add__</code>, <code>__len__</code>. </p>
+<p>Dunder methods let you emulate the behaviour of built-in types. For representing how these special methods work we will write a <code>CryptoPortfolio</code> class, that would help us track the trades for a selected coin.</p>
+<h2 id="methods">Methods</h2>
+<h3 id="initialization">Initialization</h3>
+<p>Firstly we will look at the <code>__init__</code> constructor. The <code>__init__</code> method for initialization is invoked without any call, when an instance of a class is created. In the following example, we use this method to construct portfolio objects from the <code>CryptoPortfolio</code> class.</p>
+<pre><code class="lang-python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CryptoPortfolio</span>:</span>
+    <span class="hljs-string">"""A simple crypto portfolio tracker class."""</span>
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self, coin: str, amount: int = <span class="hljs-number">0</span>)</span> -&gt; <span class="hljs-keyword">None</span>:</span>
+        <span class="hljs-string">"""
+        This constructor lets us create objects from this class.
+        """</span>
+        self.coin = coin
+        self.amount = amount
+        self._trades = []
+</code></pre>
+<p>The constructor takes care of setting up the object. It receives the coin name and an optional initial amount of the coin. We define an internal list <code>_trades</code> to keep track of all the trades.</p>
+<p>We can instantiate a new porfolio like this:</p>
+<pre><code class="lang-python"><span class="hljs-keyword">if</span> <span class="hljs-attr">__name__</span> == <span class="hljs-string">"__main__"</span>:
+    <span class="hljs-attr">btc_portfolio</span> = CryptoPortfolio('bitcoin')
+    <span class="hljs-attr">eth_portfolio</span> = CryptoPortfolio('ethereum', <span class="hljs-attr">amount=80)</span>
+</code></pre>
+<h3 id="representation">Representation</h3>
+<p>It would be nice to add a string representation for our object. There are two ways how to do this using dunder methods in Pytohn.</p>
+<ol>
+<li><code>__repr__</code>: The “official” string representation of an object. This is how you would make an object of the class. The goal of <code>__repr__</code>is to be unambiguous.</li>
+<li><code>__str__</code>: The “informal” or nicely printable string representation of an object. This is for the enduser.</li>
+</ol>
+<p>Let’s implement these methods in our <code>CryptoPortfolio</code> class:</p>
+<pre><code class="lang-python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CryptoPortfolio</span>:</span>
+    <span class="hljs-string">"""A simple crypto portfolio tracker class."""</span>
+
+    <span class="hljs-comment"># ...</span>
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__repr__</span><span class="hljs-params">(self)</span>:</span>
+        <span class="hljs-keyword">return</span> f<span class="hljs-string">"{self.__class__.__name__}({self.coin}, {self.amount})"</span>
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__str__</span><span class="hljs-params">(self)</span>:</span>
+        <span class="hljs-keyword">return</span> f<span class="hljs-string">"Portfolio for {self.coin} with starting amount: {self.amount}"</span>
+</code></pre>
+<p>We used <code>self.__class__.__name__</code> to access the class name programmatically.  Make sure you implement at least the <code>__repr__</code> method. Let&#39;s look at the result:</p>
+<pre><code class="lang-python"><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">"__main__"</span>:
+    # ...
+
+    print(btc_portfolio)
+    print(eth_portfolio)
+    print(repr(btc_portfolio))
+    print(repr(eth_portfolio))
+--
+&gt;&gt; Portfolio <span class="hljs-keyword">for</span> bitcoin with starting amount: 0
+&gt;&gt; Portfolio <span class="hljs-keyword">for</span> ethereum with starting amount: 80
+&gt;&gt; CryptoPortfolio(bitcoin, 0)
+&gt;&gt; CryptoPortfolio(ethereum, 80)
+</code></pre>
+<h3 id="iteration">Iteration</h3>
+<p>In order to iterate over our trades, we need first to add them. We can do that by adding two simple methods (buy &amp; sell). We will also add a property to calculate the current portfolio value.</p>
+<pre><code class="lang-python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CryptoPortfolio</span>:</span>
+    <span class="hljs-string">"""A simple crypto portfolio tracker class."""</span>
+
+        <span class="hljs-comment"># ...</span>
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">buy</span><span class="hljs-params">(self, amount)</span>:</span>
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> isinstance(amount, int):
+            <span class="hljs-keyword">raise</span> ValueError(<span class="hljs-string">"Please add a int value."</span>)
+        self._trades.append(amount)
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">sell</span><span class="hljs-params">(self, amount)</span>:</span>
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> isinstance(amount, int):
+            <span class="hljs-keyword">raise</span> ValueError(<span class="hljs-string">"Please add a int value."</span>)
+        <span class="hljs-keyword">if</span> self.balance - amount &lt; <span class="hljs-number">0</span>:
+            <span class="hljs-keyword">raise</span> ValueError(
+                f<span class="hljs-string">"You cannot sell, portfolio balance to low. Balance: {self.balance}"</span>
+            )
+        self._trades.append(-amount)
+
+<span class="hljs-meta">    @property</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">balance</span><span class="hljs-params">(self)</span>:</span>
+        <span class="hljs-keyword">return</span> self.amount + sum(self._trades)
+</code></pre>
+<p>Let&#39;s do some crypto transactions:</p>
+<pre><code class="lang-python"><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">"__main__"</span>:
+    btc_portfolio = CryptoPortfolio(<span class="hljs-string">"bitcoin"</span>, amount=100)
+    btc_portfolio.buy(100)
+    btc_portfolio.sell(50)
+    btc_portfolio.sell(40)
+    btc_portfolio.buy(390)
+    print(btc_portfolio.balance)
+
+--
+&gt;&gt; 500
+</code></pre>
+<p>How many trades we made? Maybe we can check it with the <code>len()</code> function.</p>
+<pre><code class="lang-python">&gt;&gt; <span class="hljs-keyword">print</span>(<span class="hljs-built_in">len</span>(btc_portfolio))
+TypeError: object of <span class="hljs-built_in">type</span> <span class="hljs-string">'CryptoPortfolio'</span> <span class="hljs-built_in">has</span> <span class="hljs-keyword">no</span> <span class="hljs-built_in">len</span>()
+</code></pre>
+<p>Unfortunately is not working. We just need another dunder method to make it work. The <code>__len__</code></p>
+<p>method!</p>
+<pre><code class="lang-python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CryptoPortfolio</span>:</span>
+    <span class="hljs-string">"""A simple crypto portfolio tracker class."""</span>
+
+        <span class="hljs-comment"># ...</span>
+
+        <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__len__</span><span class="hljs-params">(self)</span>:</span>
+            <span class="hljs-keyword">return</span> len(self._trades)
+
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">"__main__"</span>:
+    btc_portfolio = CryptoPortfolio(<span class="hljs-string">"bitcoin"</span>, amount=<span class="hljs-number">100</span>)
+    btc_portfolio.buy(<span class="hljs-number">100</span>)
+    btc_portfolio.sell(<span class="hljs-number">50</span>)
+    btc_portfolio.sell(<span class="hljs-number">40</span>)
+    btc_portfolio.buy(<span class="hljs-number">390</span>)
+    print(btc_portfolio.balance)
+    print(len(btc_portfolio))
+
+&gt;&gt; <span class="hljs-number">500</span>
+&gt;&gt; <span class="hljs-number">4</span>
+</code></pre>
+<p>The <code>len()</code> function works! We can proceed with the next step. It only takes a little bit of code to make the class iterable:</p>
+<pre><code class="lang-python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CryptoPortfolio</span>:</span>
+    <span class="hljs-string">"""A simple crypto portfolio tracker class."""</span>
+
+        <span class="hljs-comment"># ...</span>
+
+        <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__getitem__</span><span class="hljs-params">(self, position)</span>:</span>
+            <span class="hljs-keyword">return</span> self._trades[position]
+</code></pre>
+<p>Now it works:</p>
+<pre><code class="lang-python"><span class="hljs-keyword">if</span> __name_<span class="hljs-number">_</span> == <span class="hljs-string">"__main__"</span>:
+    btc_portfolio = CryptoPortfolio(<span class="hljs-string">"bitcoin"</span>, amount=<span class="hljs-number">100</span>)
+    btc_portfolio.buy(<span class="hljs-number">100</span>)
+    btc_portfolio.sell(<span class="hljs-number">50</span>)
+    btc_portfolio.sell(<span class="hljs-number">40</span>)
+    btc_portfolio.buy(<span class="hljs-number">390</span>)
+
+    <span class="hljs-keyword">for</span> trade <span class="hljs-keyword">in</span> <span class="hljs-symbol">btc_portfolio:</span>
+        print(trade)
+
+    print(f<span class="hljs-string">"First trade: {btc_portfolio[0]}"</span>)
+
+<span class="hljs-meta">&gt;&gt;</span> <span class="hljs-number">100</span>
+<span class="hljs-meta">&gt;&gt;</span> -<span class="hljs-number">50</span>
+<span class="hljs-meta">&gt;&gt;</span> -<span class="hljs-number">40</span>
+<span class="hljs-meta">&gt;&gt;</span> <span class="hljs-number">390</span>
+<span class="hljs-meta">&gt;&gt;</span> First <span class="hljs-symbol">trade:</span> <span class="hljs-number">100</span>
+</code></pre>
+<p>To iterate over in the reverse order we need to add the <code>__reverse__</code> special method.</p>
+<pre><code class="lang-python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CryptoPortfolio</span>:</span>
+    <span class="hljs-string">"""A simple crypto portfolio tracker class."""</span>
+
+        <span class="hljs-comment"># ...</span>
+
+        <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__reversed__</span><span class="hljs-params">(self)</span>:</span>
+            <span class="hljs-keyword">return</span> self[::<span class="hljs-number">-1</span>]
+
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">"__main__"</span>:
+    btc_portfolio = CryptoPortfolio(<span class="hljs-string">"bitcoin"</span>, amount=<span class="hljs-number">100</span>)
+    btc_portfolio.buy(<span class="hljs-number">100</span>)
+    btc_portfolio.sell(<span class="hljs-number">50</span>)
+    btc_portfolio.sell(<span class="hljs-number">40</span>)
+    btc_portfolio.buy(<span class="hljs-number">390</span>)
+
+    print(f<span class="hljs-string">"Trades reversed: {list(reversed(btc_portfolio))}"</span>)
+
+&gt;&gt; Trades reversed: [<span class="hljs-number">390</span>, <span class="hljs-number">-40</span>, <span class="hljs-number">-50</span>, <span class="hljs-number">100</span>]
+</code></pre>
+<p>Our <code>CryptoPortfolio</code> class is now looking pretty nice.</p>
+<p>There are some more dunder methods we will look at in the next part.</p>
+<p>You can find the final code example for the first part <a href="https://github.com/whiletrue-community/website-articles/blob/main/articles/01_python_dunder_methods_part_1/01_python_dunder_methods_part_1.py">here</a>.</p>
+<p>See you next time! Part 2 is coming in 14 days.</p>
+<p>Sources:</p>
+<ul>
+<li><a href="[https://dbader.org/blog/python-dunder-methods](https://dbader.org/blog/python-dunder-methods">Enriching Your Python Classes With Dunder (Magic, Special) Methods</a>)</li>
+<li><a href="[https://dbader.org/blog/python-dunder-method](https://levelup.gitconnected.com/python-dunder-methods-ea98ceabad15">Python Dunder Methods</a>)</li>
+</ul>

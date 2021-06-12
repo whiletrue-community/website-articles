@@ -1,6 +1,6 @@
 # Python Dunder Methods: Part 1
 
-## 
+## Introduction
 
 In this article, we will look at how to use Python magic methods. In Python, a class have special methods that are invoked by special syntax. These methods are called **dunder methods** or **magic methods**. Dunder here means Double Under (Underscores). This set of predefined methods help you enrich your classes. Every Python class inherits these methods, and you can override them to modify their behaviour. They are easy to recognize because they start and end with double underscores, for example, `__init__`,  `__add__`, `__len__`. 
 
@@ -136,7 +136,7 @@ class CryptoPortfolio:
 		# ...
 
 		def __len__(self):
-        return len(self._trades)
+            return len(self._trades)
 
 if __name__ == "__main__":
     btc_portfolio = CryptoPortfolio("bitcoin", amount=100)
@@ -185,7 +185,7 @@ if __name__ == "__main__":
 >> First trade: 100
 ```
 
-To iterate over in the reverse order we need to add the `__reverse__` **special method.
+To iterate over in the reverse order we need to add the `__reverse__` special method.
 
 ```python
 class CryptoPortfolio:
@@ -212,7 +212,7 @@ Our `CryptoPortfolio` class is now looking pretty nice.
 
 There are some more dunder methods we will look at in the next part.
 
-You can find the final code example for the first part here ([https://github.com/whiletrue-community/website-articles/blob/main/articles/01_python_dunder_methods_part_1.py](https://github.com/whiletrue-community/website-articles/blob/main/articles/01_python_dunder_methods_part_1.py)).
+You can find the final code example for the first part [here](https://github.com/whiletrue-community/website-articles/blob/main/articles/01_python_dunder_methods_part_1/01_python_dunder_methods_part_1.py ).
 
 See you next time! Part 2 is coming in 14 days.
 
