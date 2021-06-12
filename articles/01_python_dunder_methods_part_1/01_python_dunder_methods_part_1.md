@@ -27,7 +27,7 @@ class CryptoPortfolio:
 
 The constructor takes care of setting up the object. It receives the coin name and an optional initial amount of the coin. We define an internal list `_trades` to keep track of all the trades.
 
-We can instantiate a new porfolio like this:
+We can instantiate a new portfolio like this:
 
 ```python
 if __name__ == "__main__":
@@ -37,7 +37,7 @@ if __name__ == "__main__":
 
 ### Representation
 
-It would be nice to add a string representation for our object. There are two ways how to do this using dunder methods in Pytohn.
+It would be nice to add a string representation for our object. There are two ways how to do this using dunder methods in Python.
 
 1. `__repr__`: The “official” string representation of an object. This is how you would make an object of the class. The goal of `__repr__`is to be unambiguous.
 2. `__str__`: The “informal” or nicely printable string representation of an object. This is for the enduser.

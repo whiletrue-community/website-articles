@@ -17,13 +17,13 @@
         self._trades = []
 </code></pre>
 <p>The constructor takes care of setting up the object. It receives the coin name and an optional initial amount of the coin. We define an internal list <code>_trades</code> to keep track of all the trades.</p>
-<p>We can instantiate a new porfolio like this:</p>
+<p>We can instantiate a new portfolio like this:</p>
 <pre><code class="lang-python"><span class="hljs-keyword">if</span> <span class="hljs-attr">__name__</span> == <span class="hljs-string">"__main__"</span>:
     <span class="hljs-attr">btc_portfolio</span> = CryptoPortfolio('bitcoin')
     <span class="hljs-attr">eth_portfolio</span> = CryptoPortfolio('ethereum', <span class="hljs-attr">amount=80)</span>
 </code></pre>
 <h3 id="representation">Representation</h3>
-<p>It would be nice to add a string representation for our object. There are two ways how to do this using dunder methods in Pytohn.</p>
+<p>It would be nice to add a string representation for our object. There are two ways how to do this using dunder methods in Python.</p>
 <ol>
 <li><code>__repr__</code>: The “official” string representation of an object. This is how you would make an object of the class. The goal of <code>__repr__</code>is to be unambiguous.</li>
 <li><code>__str__</code>: The “informal” or nicely printable string representation of an object. This is for the enduser.</li>
