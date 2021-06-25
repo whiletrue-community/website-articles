@@ -90,8 +90,8 @@ In Python, everything is an object. So we are completely fine adding two objects
 class CryptoPortfolio:
     """A simple crypto portfolio tracker class."""
 
-		# ...
-		def __add__(self, other):
+    # ...
+    def __add__(self, other):
         coin = f"{self.coin}&{other.coin}"
         start_amount = self.amount + other.amount
         portfolio = CryptoPortfolio(coin, start_amount)
@@ -103,7 +103,7 @@ It's a little more complicated than the other methods do far. But it should do e
 
 ```python
 if __name__ == "__main__":
-		btc_portfolio = CryptoPortfolio("bitcoin")
+	btc_portfolio = CryptoPortfolio("bitcoin")
     eth_portfolio = CryptoPortfolio("ethereum", amount=80)
 
     btc_portfolio.buy(100)
