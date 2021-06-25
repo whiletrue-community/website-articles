@@ -52,7 +52,7 @@ from functools import total_ordering
 class CryptoPortfolio:
     """A simple crypto portfolio tracker class."""
 
-	# ...
+    # ...
 
     def __eq__(self, other):
         return self.balance == other.balance
@@ -103,7 +103,7 @@ It's a little more complicated than the other methods do far. But it should do e
 
 ```python
 if __name__ == "__main__":
-	btc_portfolio = CryptoPortfolio("bitcoin")
+    btc_portfolio = CryptoPortfolio("bitcoin")
     eth_portfolio = CryptoPortfolio("ethereum", amount=80)
 
     btc_portfolio.buy(100)
@@ -129,7 +129,6 @@ Let's use context manager support to export our trades into a text file. We can 
 @total_ordering
 class CryptoPortfolio:
     """A simple crypto portfolio tracker class."""
-		
     # ...
 
     def __enter__(self):
