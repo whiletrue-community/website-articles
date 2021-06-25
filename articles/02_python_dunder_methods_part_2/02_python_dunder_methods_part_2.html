@@ -1,0 +1,136 @@
+<h1 id="python-dunder-methods-part-2">Python Dunder Methods: Part 2</h1>
+<h2 id="introduction">Introduction</h2>
+<p>Welcome back, to the second part of the article about Python dunder methods. Let&#39;s continue our journey.</p>
+<h2 id="methods">Methods</h2>
+<h3 id="operator-overloading-for-comparing-portfolios">Operator Overloading for Comparing Portfolios</h3>
+<p>A lot of times there is a need to compare Python objects. If we try this with for example integers or strings is
+    working out of the box.</p>
+<pre><code class="lang-python"><span class="hljs-number">5</span> &lt; <span class="hljs-number">10</span>
+<span class="hljs-meta">&gt;&gt;</span> True
+
+<span class="hljs-string">'a'</span> &gt; <span class="hljs-string">'b'</span>
+<span class="hljs-meta">&gt;&gt;</span> False
+</code></pre>
+<p>This feels completely natural, but it’s actually quite amazing what happens behind the scenes. This is possible
+    because the object implements one or more comparison dunder methods (<code>__eq__</code>, <code>__gt__</code> ...).
+</p>
+<p>We can list these methods with the dir() function:</p>
+<pre><code class="lang-python"><span class="hljs-function"><span class="hljs-title">dir</span><span class="hljs-params">(<span class="hljs-number">3</span>)</span></span>
+
+&gt;&gt; ... <span class="hljs-string">'__eq__'</span>, <span class="hljs-string">'__float__'</span>, <span class="hljs-string">'__floor__'</span>, <span class="hljs-string">'__floordiv__'</span>, <span class="hljs-string">'__format__'</span>, 
+<span class="hljs-string">'__ge__'</span>, <span class="hljs-string">'__getattribute__'</span>, <span class="hljs-string">'__getnewargs__'</span>, <span class="hljs-string">'__gt__'</span>,...
+</code></pre>
+<p>Let&#39;s now compare our two <code>CryptoPortfolio</code> objects.</p>
+<pre><code class="lang-python">btc_portfolio = CryptoPortfolio(<span class="hljs-string">"bitcoin"</span>)
+eth_portfolio = CryptoPortfolio(<span class="hljs-string">"ethereum"</span>, amount=<span class="hljs-number">80</span>)
+btc_portfolio.buy(<span class="hljs-number">100</span>)
+<span class="hljs-built_in">print</span>(btc_portfolio &gt; eth_portfolio)
+
+&gt;&gt; TypeError: <span class="hljs-string">'&gt;'</span> <span class="hljs-keyword">not</span> supported between instances <span class="hljs-keyword">of</span> <span class="hljs-string">'CryptoPortfolio'</span> 
+<span class="hljs-keyword">and</span> <span class="hljs-string">'CryptoPortfolio'</span>
+</code></pre>
+<p>We got a TypeError because we have not implemented any comparison dunder methods nor inherited them from a parent
+    class.</p>
+<p>Let&#39;s implement the need dunder methods. Because we don&#39;t want to implement all of the comparison dunder
+    methods, we can use the <code>functools.total_ordering</code> decorator. This decorator allows us to define all the
+    comparison dunder methods with only implementing <code>__eq__</code> and <code>__lt__</code>.</p>
+<pre><code class="lang-python"><span class="hljs-keyword">from</span> functools <span class="hljs-keyword">import</span> total_ordering
+
+<span class="hljs-meta">@total_ordering</span>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CryptoPortfolio</span>:</span>
+    <span class="hljs-string">"""A simple crypto portfolio tracker class."""</span>
+
+    <span class="hljs-comment"># ...</span>
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__eq__</span><span class="hljs-params">(self, other)</span>:</span>
+        <span class="hljs-keyword">return</span> self.balance == other.balance
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__lt__</span><span class="hljs-params">(self, other)</span>:</span>
+        <span class="hljs-keyword">return</span> self.balance &lt; other.balance
+</code></pre>
+<p>And now we can compare <code>CryptoPortfolio</code> instances:</p>
+<pre><code class="lang-python"><span class="hljs-keyword">if</span> __name_<span class="hljs-number">_</span> == <span class="hljs-string">"__main__"</span>:
+
+    btc_portfolio = CryptoPortfolio(<span class="hljs-string">"bitcoin"</span>)
+    eth_portfolio = CryptoPortfolio(<span class="hljs-string">"ethereum"</span>, amount=<span class="hljs-number">80</span>)
+    btc_portfolio.buy(<span class="hljs-number">100</span>)
+
+    print(btc_portfolio &gt; eth_portfolio)
+    print(btc_portfolio &lt; eth_portfolio)
+    print(btc_portfolio == eth_portfolio)
+    print(btc_portfolio != eth_portfolio)
+
+<span class="hljs-meta">&gt;&gt;</span> True
+<span class="hljs-meta">&gt;&gt;</span> False
+<span class="hljs-meta">&gt;&gt;</span> False
+<span class="hljs-meta">&gt;&gt;</span> True
+</code></pre>
+<h3 id="operator-overloading-for-adding-portfolios">Operator Overloading for Adding Portfolios</h3>
+<p>In Python, everything is an object. So we are completely fine adding two objects. But first, we need to implement the
+    <code>__add__</code> method to be able to merge two portfolios.</p>
+<pre><code class="lang-python"><span class="hljs-meta">@total_ordering</span>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CryptoPortfolio</span>:</span>
+    <span class="hljs-string">"""A simple crypto portfolio tracker class."""</span>
+
+    <span class="hljs-comment"># ...</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__add__</span><span class="hljs-params">(self, other)</span>:</span>
+        coin = f<span class="hljs-string">"{self.coin}&amp;{other.coin}"</span>
+        start_amount = self.amount + other.amount
+        portfolio = CryptoPortfolio(coin, start_amount)
+        <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> list(self) + list(other):
+            portfolio.buy(t)
+        <span class="hljs-keyword">return</span> portfolio
+</code></pre>
+<p>It&#39;s a little more complicated than the other methods do far. But it should do exactly we expect:</p>
+<pre><code class="lang-python">if __name__ == <span class="hljs-string">"__main__"</span>:
+    <span class="hljs-keyword">btc_portfolio </span>= CryptoPortfolio(<span class="hljs-string">"bitcoin"</span>)
+    eth_portfolio = CryptoPortfolio(<span class="hljs-string">"ethereum"</span>, amount=<span class="hljs-number">80</span>)
+
+    <span class="hljs-keyword">btc_portfolio.buy(100)
+</span>    <span class="hljs-keyword">btc_portfolio.buy(20)
+</span>    <span class="hljs-keyword">btc_portfolio.sell(30)
+</span>    eth_portfolio.<span class="hljs-keyword">buy(120)
+</span>
+    <span class="hljs-keyword">joined_portfolio </span>= <span class="hljs-keyword">btc_portfolio </span>+ eth_portfolio
+    print(<span class="hljs-keyword">joined_portfolio)
+</span>    print(f<span class="hljs-string">"Balance: {joined_portfolio.balance}"</span>)
+    print(f<span class="hljs-string">"Trades: {list(joined_portfolio)}"</span>)
+
+&gt;&gt; Portfolio for <span class="hljs-keyword">bitcoin&amp;ethereum </span>with starting amount: <span class="hljs-number">80</span>
+&gt;&gt; <span class="hljs-keyword">Balance: </span><span class="hljs-number">290</span>
+&gt;&gt; Trades: [<span class="hljs-number">100</span>, <span class="hljs-number">20</span>, -<span class="hljs-number">30</span>, <span class="hljs-number">120</span>]
+</code></pre>
+<h3 id="context-manager-support">Context Manager Support</h3>
+<p>Let&#39;s use context manager support to export our trades into a text file. We can leverage the Pythonic with
+    statement by adding two more dunder methods.</p>
+<pre><code class="lang-python"><span class="hljs-meta">@total_ordering</span>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CryptoPortfolio</span>:</span>
+    <span class="hljs-string">"""A simple crypto portfolio tracker class."""</span>
+    <span class="hljs-comment"># ...</span>
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__enter__</span><span class="hljs-params">(self)</span>:</span>
+        self.file = open(<span class="hljs-string">"trades.txt"</span>, <span class="hljs-string">"w"</span>)
+        <span class="hljs-keyword">return</span> self.file
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__exit__</span><span class="hljs-params">(self, exc_type, exc_vals, exc_tb)</span>:</span>
+        self.file.close()
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">export_trades</span><span class="hljs-params">(self)</span>:</span>
+        <span class="hljs-keyword">with</span> self <span class="hljs-keyword">as</span> file:
+            <span class="hljs-keyword">for</span> trade <span class="hljs-keyword">in</span> self:
+                file.write(f<span class="hljs-string">"{trade}\n"</span>)
+</code></pre>
+<p>We can export our trades like this.</p>
+<pre><code class="lang-python"><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">"__main__"</span>:
+
+    # ...
+
+    joined_portfolio.export_trades()
+</code></pre>
+<p>After running this code, a file should be created in your working directory.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>That&#39;s it. You should now know how to use the most common dunder methods in Python.</p>
+<p>You can find the final code example for the second part <a
+        href="https://github.com/whiletrue-community/website-articles/blob/main/articles/02_python_dunder_methods_part_2/02_python_dunder_methods_part_2.py">here</a>.
+</p>
+<p>See you next time! A new post is coming in 14 days.</p>
