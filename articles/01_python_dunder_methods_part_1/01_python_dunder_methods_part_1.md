@@ -218,5 +218,5 @@ See you next time! Part 2 is coming in 14 days.
 
 Sources:
 
-- [Enriching Your Python Classes With Dunder (Magic, Special) Methods]([https://dbader.org/blog/python-dunder-methods](https://dbader.org/blog/python-dunder-methods))
-- [Python Dunder Methods]([https://dbader.org/blog/python-dunder-method](https://levelup.gitconnected.com/python-dunder-methods-ea98ceabad15))
+- [Enriching Your Python Classes With Dunder (Magic, Special) Methods](https://dbader.org/blog/python-dunder-methods)
+- [Python Dunder Methods](https://levelup.gitconnected.com/python-dunder-methods-ea98ceabad15)s
